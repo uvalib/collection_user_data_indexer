@@ -1,0 +1,18 @@
+#!/bin/bash
+
+SCRIPTDIR=$( (cd -P $(dirname $0) && pwd) )
+
+testmode=$1
+
+if [[ "${month}" = "" ]]; then
+    month=`date -d "-1 month" "+%Y%m"`
+fi
+
+outputfile=$SCRIPTDIR/data/crontab-${month}.out
+
+echo "Starting processing for month ${month}. Date and time is: "`date` > ${outputfile}
+echo "Process sirsi records" >> ${outputfile}
+$SCRIPTDIR/process_sirsi_for_month ${testmode} 2>&1 >> ${outputfile}
+echo "Process tracksys records" >> ${outputfile}
+$SCRIPTDIR/process_tracksys_for_month ${testmode} 2>&1 >> ${outputfile}
+

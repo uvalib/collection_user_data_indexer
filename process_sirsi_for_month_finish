@@ -1,0 +1,78 @@
+#!/bin/bash
+
+SCRIPTDIR=$( (cd -P $(dirname $0) && pwd) )
+DATADIR=$SCRIPTDIR/data
+
+testmode=""
+if [[ "$1" == "-t" ]] ; then
+    testmode=$1
+    shift
+fi
+
+month=$1
+
+if [[ "${month}" = "" ]]; then
+    month=`date -d "-1 month" "+%Y%m"`
+fi
+
+solrmarc_dir=$SCRIPTDIR/bin/solrmarc3
+solrmarc_jar_name=`ls -t $solrmarc_dir  | egrep "solrmarc_core" | egrep "[.]jar$" | head -1`
+solrmarc_jar="$solrmarc_dir/$solrmarc_jar_name"
+log4j_dir="$solrmarc_dir/lib"
+log4j_jar_name=`ls -t $log4j_dir  | egrep "^log4j" | egrep "[.]jar$" | head -1`
+log4j_jar="$log4j_dir/$log4j_jar_name"
+
+PATH=/lib_content23/java_1.8.0/jdk1.8.0/bin:/usr/bin:/bin
+JAVACLASSPATH="$SCRIPTDIR/cnhi_build.jar:$solrmarc_jar:$log4j_jar"
+echo $JAVACLASSPATH
+
+#Check for months data from sirsi
+inputfile="$SCRIPTDIR/data/incoming/sirsi/${month}.data"
+outputdir="$SCRIPTDIR/data"
+outputname="${month}_solr.xml"
+outputfile="$outputdir/$outputname"
+input_bucket="s3://circdata-ingest-production-ira/from-ira/sirsi"
+output_bucket="s3://circdata-ingest-production-inbound/sirsi"
+
+if [[ ! -e "$inputfile" ]] ; then
+  echo "Input file $inputfile doesn't exist yet...  exiting"
+  exit 1
+fi
+
+if [[ "$AWS" == "" ]] ; then
+    echo "Environment variable $""AWS must be defined as executable for aws command-line interface"
+    exit 1
+fi
+
+echo $AWS s3 ls "$input_bucket"
+fileinbucket=`$AWS s3 ls ${input_bucket}/ 2> /dev/null | egrep "${month}_" | sed -e 's/^[^L]*//'`
+
+if [[ "$fileinbucket" == "" ]] ; then
+    echo "error: expected response file for month $month not found in bucket ${input_bucket}/"
+    echo "terminating..."
+    exit 1
+else
+    echo "found $fileinbucket continuing" 
+fi
+
+
+if [[ "$testmode" != "-t" ]] ; then
+    if [[ -e "$outputfile" ]] ; then
+      echo "Output file $outputfile already exists.  I done did this.  exiting"
+      exit 1
+    fi
+fi
+
+localfilename=`echo $fileinbucket | sed -e 's/ //g'`
+echo $AWS s3 cp "$input_bucket/$fileinbucket" $DATADIR/$localfilename
+$AWS s3 cp "$input_bucket/$fileinbucket" $DATADIR/$localfilename 2> /dev/null
+
+cd $SCRIPTDIR
+java -cp "$JAVACLASSPATH" org.solrmarc.mixin.ReadUserResearchData -d bin/solrmarc3 -irafile $DATADIR/$localfilename  $inputfile $outputfile 2>&1
+
+echo "Uploading file $outputfile to AWS bucket ${output_bucket} as ${outputname}"
+if [[ "$testmode" == "-t" ]] ; then
+    echo $AWS s3 cp $outputfile "${output_bucket}/${outputname}"
+else
+    $AWS s3 cp $outputfile "${output_bucket}/${outputname}" 2>&1 | egrep -v "SNIMissingWarning"
+fi

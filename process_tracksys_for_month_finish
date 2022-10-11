@@ -1,0 +1,85 @@
+#!/bin/bash
+
+SCRIPTDIR=$( (cd -P $(dirname $0) && pwd) )
+DATADIR=$SCRIPTDIR/data
+
+testmode=""
+if [[ "$1" == "-t" ]] ; then
+    testmode=$1
+    shift
+fi
+
+month=$1
+
+if [[ "${month}" = "" ]]; then
+    month=`date -d "-1 month" "+%Y-%m"`
+fi
+
+solrmarc_dir=$SCRIPTDIR/bin/solrmarc3
+solrmarc_bin_dir="$SCRIPTDIR/bin"
+solrmarc_jar_name=`ls -t $solrmarc_dir  | egrep "solrmarc_core" | egrep "[.]jar$" | head -1`
+solrmarc_jar="$solrmarc_dir/$solrmarc_jar_name"
+log4j_dir="$solrmarc_dir/lib"
+log4j_jar_name=`ls -t $log4j_dir  | egrep "^log4j" | egrep "[.]jar$" | head -1`
+log4j_jar="$log4j_dir/$log4j_jar_name"
+
+PATH=/lib_content23/java_1.8.0/jdk1.8.0/bin:$SCRIPTDIR/bin:/usr/bin:/bin
+JAVACLASSPATH="$SCRIPTDIR/cnhi_build.jar:$solrmarc_jar:$log4j_jar"
+echo $JAVACLASSPATH
+
+#month=2022-02
+firstday=`date -d "${month}-01"  "+%Y-%m-%d"`
+lastday=`date -d "${month}-01 + 1 month - 1 day"  "+%Y-%m-%d"`
+
+incomingdatafile="$SCRIPTDIR/data/incoming/tracksys/tracksys_${month}.tsv"
+if [[ ! -s $incomingdatafile ]] ; then
+    echo "error: expected incoming data file doesn't exist yet" 
+    echo "terminating..."
+    exit 1
+else
+    echo "found $incomingdatafile continuing" 
+fi
+
+if [[ "$AWS" == "" ]] ; then
+    echo "Environment variable $""AWS must be defined as executable for aws command-line interface"
+    exit 1
+fi
+
+echo $AWS s3 ls s3://circdata-ingest-production-ira/from-ira/tracksys/
+input_bucket="s3://circdata-ingest-production-ira/from-ira/tracksys"
+output_bucket="s3://circdata-ingest-production-inbound/tracksys"
+fileinbucket=`$AWS s3 ls ${input_bucket}/ 2> /dev/null | egrep "_${month}_" | sed -e 's/^[^L]*//'`
+outputfilename=tracksys_${month}.solr.xml
+outputfile=$DATADIR/${outputfilename}
+
+if [[ "$fileinbucket" == "" ]] ; then
+    echo "error: expected response file for month $month not found in bucket ${input_bucket}/"
+    echo "terminating..."
+    exit 1
+else
+    echo "found $fileinbucket continuing" 
+fi
+
+localfilename=`echo $fileinbucket | sed -e 's/ //g'`
+echo $AWS s3 cp "$input_bucket/$fileinbucket" $DATADIR/$localfilename
+$AWS s3 cp "$input_bucket/$fileinbucket" $DATADIR/$localfilename 2> /dev/null
+
+if [[ "$testmode" != "-t" ]] ; then
+    if [[ -e "$outputfile" ]] ; then
+      echo "Output file $outputfile already exists.  I done did this.  exiting"
+      exit 1
+    fi
+fi
+
+echo "Running Java"
+java -cp "$JAVACLASSPATH"  org.solrmarc.mixin.ReadUserResearchData -d bin/solrmarc3 -s tracksys-uva -irafile $DATADIR/$localfilename  ${incomingdatafile} ${outputfile}  2>&1
+
+echo "Uploading file to bucket ${output_bucket}"
+if [[ "$testmode" == "-t" ]] ; then
+    echo $AWS s3 cp ${outputfile}  ${output_bucket}/${outputfilename}
+else
+    $AWS s3 cp ${outputfile}  ${output_bucket}/${outputfilename}  2>&1 | egrep -v "SNIMissingWarning"
+fi
+
+
+

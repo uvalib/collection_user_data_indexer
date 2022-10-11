@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>This is easy!</comment>
+<entry key=""></entry>
+<entry key="654503">Undergraduate</entry>
+<entry key="BS">Undergraduate</entry>
+
+<comment>Entries from Workday Job Family Group field </comment>
+<entry key="Academic Administration">Staff</entry>
+<entry key="Administrative Group">Staff</entry>
+<entry key="Advancement">Staff</entry>
+<entry key="Athletics">Staff</entry>
+<entry key="Communications">Staff</entry>
+<entry key="Educational Resources">Staff</entry>
+<entry key="Faculty">Faculty</entry>
+<entry key="Finance">Staff</entry>
+<entry key="Health Services">Staff</entry>
+<entry key="Human Resources Group">Staff</entry>
+<entry key="Information Technology">Staff</entry>
+<entry key="Molec Med">Staff</entry>
+<entry key="Operations">Staff</entry>
+<entry key="Professional Research Staff">Staff</entry>
+<entry key="Protection, Compliance, and Regulation">Staff</entry>
+<entry key="Registered Nurse">Staff</entry>
+<entry key="Research">Staff</entry>
+<entry key="Student Services">Staff</entry>
+<entry key="Student Workers">Student Worker</entry>
+<entry key="Temporary Services">Staff</entry>
+<entry key="Trades &amp; Engineering">Staff</entry>
+
+<comment>Entries from SIS Academic Career Desc field </comment>
+<entry key="Graduate">Graduate</entry>
+<entry key="Graduate Business">Graduate</entry>
+<entry key="Law">Graduate</entry>
+<entry key="Medical School">Graduate</entry>
+<entry key="Non-Credit">Other Student</entry>
+<entry key="Undergraduate">Undergraduate</entry>
+
+<comment>Entries from Aeon user type field </comment>
+<entry key="Continuing Education">Other Student</entry>
+<entry key="Fellow">Faculty</entry>
+<entry key="Graduate">Graduate</entry>
+<entry key="Other Faculty">Faculty</entry>
+<entry key="Other Graduate">Graduate</entry>
+<entry key="Other Undergraduate">Undergraduate</entry>
+<entry key="Researcher">Staff</entry>
+<entry key="Special Collections Staff">Staff</entry>
+<entry key="Staff">Staff</entry>
+<entry key="Undergraduate">Undergraduate</entry>
+<entry key="VA Borrower">Community Patron</entry>
+
+
+</properties>

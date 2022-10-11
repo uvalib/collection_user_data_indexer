@@ -1,0 +1,40 @@
+#! /bin/bash
+# printrecord.sh
+# Diagnostic program to display marc records.
+# $Id: printrecord.sh 
+
+E_BADARGS=65
+
+BASEBINDIR=$( (cd -P $(dirname $0) && pwd) )
+solrmarc_dir=$BASEBINDIR/solrmarc3
+solrmarc_lib_dir=$solrmarc_dir/lib
+marc4j_jar_name=`ls -t $solrmarc_lib_dir  | egrep "^marc4j" | egrep "[.]jar$" | head -1`
+marc4j_jar="$solrmarc_lib_dir/$marc4j_jar_name"
+
+if ! [ -p /dev/stdin ]
+then
+  if [ $# -eq 0 ]
+  then
+    echo "    Usage: `basename $0`  ./path/to/marc.mrc "
+    echo "    Usage: cat /path/to/big/marcfile.mrc | `basename $0` "
+    exit $E_BADARGS
+  fi
+fi
+
+stdin=
+lastarg="${@: -1}"
+if [[ -p /dev/stdin && "$lastarg" != "-" ]]; then
+    stdin=-
+fi
+
+if [[ "${1:0:1}" == "-" ]]
+then
+#    echo "java -jar $marc4j_jar printrecord  $* $stdin" 1>&2
+    java -jar $marc4j_jar printrecord $* $stdin
+else
+#    echo "java -jar $marc4j_jar printrecord $* $stdin" 1>&2
+    java -jar $marc4j_jar printrecord $* $stdin
+fi
+exit 0
+
+

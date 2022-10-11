@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>This is easy!</comment>
+<entry key=""> </entry>
+<entry key="Architecture Grad Non-Degree">Architecture School</entry>
+<entry key="Architecture Graduate">Architecture School</entry>
+<entry key="Architecture UG Non-Degree">Architecture School</entry>
+<entry key="Architecture Undergraduate">Architecture School</entry>
+<entry key="AR-Architecture School">Architecture School</entry>
+
+<entry key="Arts &amp; Sciences GR Non-Degree">College of Arts &amp; Sciences</entry>
+<entry key="Arts &amp; Sciences Graduate">College of Arts &amp; Sciences</entry>
+<entry key="Arts &amp; Sciences UG Non-Degree">College of Arts &amp; Sciences</entry>
+<entry key="Arts &amp; Sciences Undergraduate">College of Arts &amp; Sciences</entry>
+<entry key="AS-College of Arts &amp; Sciences">College of Arts &amp; Sciences</entry>
+
+<entry key="BA-Frank Batten School">Frank Batten School</entry>
+<entry key="Ldsh &amp; Public Policy Grad">Frank Batten School</entry>
+<entry key="Ldsh &amp; Public Policy Undergrad">Frank Batten School</entry>
+
+<entry key="Business">Darden School</entry>
+<entry key="Business Non-Degree">Darden School</entry>
+<entry key="DA-Darden School">Darden School</entry>
+
+<entry key="Commerce Graduate">McIntire School of Commerce</entry>
+<entry key="Commerce Non-Credit Non-Degree">McIntire School of Commerce</entry>
+<entry key="Commerce Undergrad Non-Degree">McIntire School of Commerce</entry>
+<entry key="Commerce Undergraduate">McIntire School of Commerce</entry>
+<entry key="MC-McIntire School">McIntire School of Commerce</entry>
+
+<entry key="Education Graduate">Curry School of Education</entry>
+<entry key="Education Graduate Non-Degree">Curry School of Education</entry>
+<entry key="Education Non-Credit Non-Deg">Curry School of Education</entry>
+<entry key="Education Undergraduate">Curry School of Education</entry>
+<entry key="CU-Curry School">Curry School of Education</entry>
+
+<entry key="Engineering Grad Non-Degree">Engineering School</entry>
+<entry key="Engineering Graduate">Engineering School</entry>
+<entry key="Engineering UG Non-Degree">Engineering School</entry>
+<entry key="Engineering Undergraduate">Engineering School</entry>
+<entry key="EN-Engr School">Engineering School</entry>
+
+<entry key="Data Science Graduate">School of Data Science</entry>
+<entry key="DS-School of Data Science">School of Data Science</entry>
+
+<entry key="Law">Law School</entry>
+<entry key="Law Non-Degree">Law School</entry>
+<entry key="LW-Law School">Law School</entry>
+
+<entry key="Medicine">School of Medicine</entry>
+<entry key="Medicine Graduate">School of Medicine</entry>
+<entry key="Medicine Graduate Non-Degree">School of Medicine</entry>
+<entry key="MD-School of Medicine">School of Medicine</entry>
+
+<entry key="Nursing Graduate">Nursing School</entry>
+<entry key="Nursing Graduate Non-Degree">Nursing School</entry>
+<entry key="Nursing Undergrad Non-Degree">Nursing School</entry>
+<entry key="Nursing Undergraduate">Nursing School</entry>
+<entry key="NR-Nursing School">Nursing School</entry>
+
+<entry key="SCPS Graduate">School of Continuing and Professional Studies</entry>
+<entry key="SCPS Graduate Non-Degree">School of Continuing and Professional Studies</entry>
+<entry key="SCPS Non-Credit CEU">School of Continuing and Professional Studies</entry>
+<entry key="SCPS Non-Credit Non-Degree">School of Continuing and Professional Studies</entry>
+<entry key="SCPS Undergraduate">School of Continuing and Professional Studies</entry>
+<entry key="SCPS Undergraduate Non-Degree">School of Continuing and Professional Studies</entry>
+<entry key="CP-School of Cont/Prof Studies">School of Continuing and Professional Studies</entry>
+
+<entry key="AT-Athletics"> </entry>
+<entry key="AT-IM-Sports"> </entry>
+<entry key="BU-Business Operations"> </entry>
+<entry key="BU-Dining Svcs"> </entry>
+<entry key="BU-Housing Div"> </entry>
+<entry key="BU-Parking and Transportation"> </entry>
+<entry key="BU-Printing and Copy Services"> </entry>
+<entry key="BU-University Bookstore"> </entry>
+<entry key="CO-AVP for Safety"> </entry>
+<entry key="CO-Audit Dept"> </entry>
+<entry key="CO-Chief HR Officer"> </entry>
+<entry key="CO-Exec VP/COO"> </entry>
+<entry key="CO-Organizational Excellence"> </entry>
+<entry key="DE-VP/Diversity and Equity"> </entry>
+<entry key="DV-VP Office"> </entry>
+<entry key="FI-AVPFO"> </entry>
+<entry key="FI-AVPFS"> </entry>
+<entry key="FI-Treasury Management"> </entry>
+<entry key="FI-VP Finance"> </entry>
+<entry key="FM-Facilities Management"> </entry>
+<entry key="HS-Health Sciences Library"> </entry>
+<entry key="HS-Med Ctr"> </entry>
+<entry key="IT-ITS"> </entry>
+<entry key="IT-ITS Comm Svcs"> </entry>
+<entry key="LB-Library-UVa"> </entry>
+
+<entry key="OP-Architect-Uva"> </entry>
+<entry key="OP-Building Official"> </entry>
+<entry key="OP-Environmental Compliance"> </entry>
+<entry key="OP-SVP Operations"> </entry>
+<entry key="PR-Board Office"> </entry>
+<entry key="PR-EOCR Office"> </entry>
+<entry key="PR-Miller Center"> </entry>
+<entry key="PR-University Communications"> </entry>
+<entry key="PR-University Counsel"> </entry>
+<entry key="PV-Admissions-Undergrad"> </entry>
+<entry key="PV-Assoc Prov-Acad Outreach"> </entry>
+<entry key="PV-Biocomplexity Initiative"> </entry>
+<entry key="PV-Ofc of Exec VP &amp; Provost"> </entry>
+<entry key="PV-VP for Administration"> </entry>
+<entry key="PV-Vice Prov for Enrollment"> </entry>
+<entry key="PV-Vice Prov for the Arts"> </entry>
+<entry key="PV-Vice Prov-Acad Affairs"> </entry>
+<entry key="PV-Vice Prov-Global Affairs"> </entry>
+<entry key="PV-Vice Provost-Faculty Affair"> </entry>
+<entry key="Post-Baccalaureate"> </entry>
+<entry key="Provost Graduate"> </entry>
+<entry key="Provost Non-Credit"> </entry>
+<entry key="RS-Envir Health/Safety"> </entry>
+<entry key="RS-Sponsored Programs"> </entry>
+<entry key="RS-VP for Research"> </entry>
+<entry key="SA-African American Affairs"> </entry>
+<entry key="SA-Dean of Students"> </entry>
+<entry key="SA-SH-Student Health"> </entry>
+<entry key="SA-UVA Career Center"> </entry>
+<entry key="SA-VP Office"> </entry>
+<entry key="ST-VP Information Technology"> </entry>
+<entry key="Semester at Sea"> </entry>
+<entry key="Visiting Graduate Non-Degree"> </entry>
+<entry key="Visiting Undergrad Non-Degree"> </entry>
+<entry key="WS-Provost"> </entry>
+<entry key="WS-VC Administration"> </entry>
+</properties>

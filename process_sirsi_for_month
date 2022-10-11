@@ -1,0 +1,65 @@
+#!/bin/bash
+
+SCRIPTDIR=$( (cd -P $(dirname $0) && pwd) )
+
+testmode=""
+if [[ "$1" == "-t" ]] ; then
+    testmode=$1
+    shift
+fi
+
+solrmarc_dir=$SCRIPTDIR/bin/solrmarc3
+solrmarc_jar_name=`ls -t $solrmarc_dir  | egrep "solrmarc_core" | egrep "[.]jar$" | head -1`
+solrmarc_jar="$solrmarc_dir/$solrmarc_jar_name"
+log4j_dir="$solrmarc_dir/lib"
+log4j_jar_name=`ls -t $log4j_dir  | egrep "^log4j" | egrep "[.]jar$" | head -1`
+log4j_jar="$log4j_dir/$log4j_jar_name"
+
+month=$1
+PATH=/lib_content23/java_1.8.0/jdk1.8.0/bin:/usr/bin:/bin
+JAVACLASSPATH="$SCRIPTDIR/cnhi_build.jar:$solrmarc_jar:$log4j_jar"
+echo $JAVACLASSPATH
+
+if [[ "${month}" = "" ]]; then
+    month=`date -d "-1 month" "+%Y%m"`
+fi
+
+#Check for months data from sirsi
+inputfile="$SCRIPTDIR/data/incoming/sirsi/${month}.data"
+outputdir="$SCRIPTDIR/data/to_IRA/sirsi"
+outputname="${month}_IRA.tsv"
+outputfile="$outputdir/$outputname"
+bucketname="s3://circdata-ingest-production-ira/to-ira/sirsi"
+
+if [[ ! -e "$inputfile" ]] ; then
+  echo "Input file $inputfile doesn't exist yet...  exiting"
+  exit 1
+fi
+
+mkdir -p $outputdir
+
+if [[ "$testmode" != "-t" ]] ; then
+    if [[ -e "$outputfile" ]] ; then
+      echo "Output file $outputfile already exists.  I done did this.  exiting"
+      exit 1
+    fi
+fi
+
+cd $SCRIPTDIR
+echo "Processing sirsi data from file $inputfile"
+java -cp "$JAVACLASSPATH"  org.solrmarc.mixin.ReadUserResearchData -d bin/solrmarc3 -IRA $inputfile $outputfile
+
+#define the needed AWS environment variables
+if [[ "$AWS" == "" ]] ; then
+    echo "Environment variable $""AWS must be defined as executable for aws command-line interface"
+    exit 1
+fi
+
+echo "Uploading $outputfile to AWS S3 bucket"
+if [[ "$testmode" == "-t" ]] ; then
+    echo $AWS s3 cp $outputfile "${bucketname}/${outputname}" 
+else
+    $AWS s3 cp $outputfile "${bucketname}/${outputname}" 2>&1 | egrep -v "SNIMissingWarning"
+fi
+
+

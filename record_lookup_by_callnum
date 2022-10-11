@@ -1,0 +1,28 @@
+#!/bin/bash
+
+SCRIPTDIR=$( (cd -P $(dirname $0) && pwd) )
+
+solrmarc_bin="/lib_content23/record_source_for_solr_cores/bin"
+
+title=$1
+call_num=$2
+call_num_file=`echo $call_num | tr '/ ' '-_'`
+call_num_fixed=`echo "$call_num" | sed -e 's/ /%20/g' -e 's/:/%3A/g'`
+file_list=$3
+
+#echo 'http://virgo4-solr-staging-replica-0-private.internal.lib.virginia.edu:8080/solr/test_core/select?defType=lucene&q=all_fields_t:%22'"$call_num_fixed"'%22&qt=search&fq=data_source_f:sirsi&fl=id&wt=xml'
+ 
+idlist2=`curl -s 'http://virgo4-solr-staging-replica-0-private.internal.lib.virginia.edu:8080/solr/test_core/select?defType=lucene&q=all_fields_t:%22'"$call_num_fixed"'%22&qt=search&fq=data_source_f:sirsi&fl=id&wt=xml' | egrep '"id"' | sed -e 's/.*id">//' -e 's/<.*$//' | tr '\n' ',' | sed -e 's/,$//'`
+
+#echo 'http://virgo4-solr-staging-replica-0-private.internal.lib.virginia.edu:8080/solr/test_core/select?defType=lucene&q=individual_call_number_a:%22'"$call_num_fixed"'%22&qt=search&fq=data_source_f:sirsi&fl=id&wt=xml'
+
+idlist3=`curl -s 'http://virgo4-solr-staging-replica-0-private.internal.lib.virginia.edu:8080/solr/test_core/select?defType=lucene&q=call_number_all_e:%22'"$call_num_fixed"'%22&qt=search&fq=data_source_f:sirsi&fl=id&wt=xml' | egrep '"id"' | sed -e 's/.*id">//' -e 's/<.*$//' | tr '\n' ','`
+
+idlist=`echo ${idlist2}${idlist3}`
+mkdir -p $SCRIPTDIR/data/callnum_by_both
+#echo $idlist
+
+curl -s 'https://ils.lib.virginia.edu/uhtbin/get_marc?keys='"$idlist" | ${solrmarc_bin}/filterrecords '999a/'"$call_num" | tee "$SCRIPTDIR/data/callnum_by_both/CN_$call_num_file".mrc | ${solrmarc_bin}/printrecord | egrep '^001' | sed -e 's/001[ ]*//'
+
+echo "$call_num_file" "CN_$call_num_file".mrc >> $file_list
+

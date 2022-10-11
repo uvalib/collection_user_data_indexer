@@ -1,0 +1,21 @@
+#!/bin/bash
+
+SCRIPTDIR=$( (cd -P $(dirname $0) && pwd) )
+
+testmode=$1
+
+if [[ "${month}" = "" ]]; then
+    month=`date -d "-1 month" "+%Y%m"`
+fi
+
+outputfile=$SCRIPTDIR/data/crontab-${month}-finish.out
+
+echo "Finishing processing for month ${month}. Date and time is: "`date` >> ${outputfile}
+echo "-------------------------------------------------------------------" >> ${outputfile}
+echo "Process sirsi records" >> ${outputfile}
+$SCRIPTDIR/process_sirsi_for_month_finish ${testmode} 2>&1 >> ${outputfile}
+echo "Process tracksys records" >> ${outputfile}
+$SCRIPTDIR/process_tracksys_for_month_finish ${testmode} 2>&1 >> ${outputfile}
+echo "-------------------------------------------------------------------" >> ${outputfile}
+
+
