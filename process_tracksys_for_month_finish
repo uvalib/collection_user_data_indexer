@@ -24,7 +24,7 @@ log4j_jar_name=`ls -t $log4j_dir  | egrep "^log4j" | egrep "[.]jar$" | head -1`
 log4j_jar="$log4j_dir/$log4j_jar_name"
 
 PATH=/lib_content23/java_1.8.0/jdk1.8.0/bin:$SCRIPTDIR/bin:/usr/bin:/bin
-JAVACLASSPATH="$SCRIPTDIR/cnhi_build.jar:$solrmarc_jar:$log4j_jar"
+JAVACLASSPATH="$SCRIPTDIR/build/cnhi_build.jar:$solrmarc_jar:$log4j_jar"
 echo $JAVACLASSPATH
 
 #month=2022-02
