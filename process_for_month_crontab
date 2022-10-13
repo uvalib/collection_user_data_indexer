@@ -10,11 +10,13 @@ fi
 
 outputfile=$SCRIPTDIR/data/crontab-${month}.out
 
-ant -f build/build.xml
-
 echo "Starting processing for month ${month}. Date and time is: "`date` > ${outputfile}
+
+ant -f $SCRIPTDIR/build/build.xml >> ${outputfile}
+
 echo "Process sirsi records" >> ${outputfile}
 $SCRIPTDIR/process_sirsi_for_month ${testmode} 2>&1 >> ${outputfile}
+
 echo "Process tracksys records" >> ${outputfile}
 $SCRIPTDIR/process_tracksys_for_month ${testmode} 2>&1 >> ${outputfile}
 

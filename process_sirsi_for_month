@@ -16,7 +16,6 @@ log4j_jar_name=`ls -t $log4j_dir  | egrep "^log4j" | egrep "[.]jar$" | head -1`
 log4j_jar="$log4j_dir/$log4j_jar_name"
 
 month=$1
-PATH=/lib_content23/java_1.8.0/jdk1.8.0/bin:/usr/bin:/bin
 JAVACLASSPATH="$SCRIPTDIR/build/cnhi_build.jar:$solrmarc_jar:$log4j_jar"
 echo $JAVACLASSPATH
 
@@ -25,11 +24,37 @@ if [[ "${month}" = "" ]]; then
 fi
 
 #Check for months data from sirsi
+incomingbucket="s3://circdata-ingest-production-ira/from-sirsi"
 inputfile="$SCRIPTDIR/data/incoming/sirsi/${month}.data"
 outputdir="$SCRIPTDIR/data/to_IRA/sirsi"
 outputname="${month}_IRA.tsv"
 outputfile="$outputdir/$outputname"
 bucketname="s3://circdata-ingest-production-ira/to-ira/sirsi"
+
+#check for the needed AWS environment variables
+if [[ "$AWS" == "" ]] ; then
+    echo "Environment variable $""AWS must be defined as executable for aws command-line interface"
+    exit 1
+fi
+
+#check for the needed JAVA environment variables
+if [[ "$JAVA" == "" ]] ; then
+    echo "Environment variable $""JAVA must be defined as executable for java version 1.8 or greater"
+    exit 1
+fi
+
+if [[ ! -e "$inputfile" ]] ; then
+    hasfileinbucket=`$AWS s3 ls ${incomingbucket}/${month}.data 2> /dev/null | egrep "${month}" | wc -l`
+
+    if [[ "$hasfileinbucket" == "0" ]] ; then
+      echo "Input file ${month}.data doesn't exist yet in S3 bucket ${incomingbucket} ...  exiting"
+      exit 1
+    fi
+
+    mkdir -p $SCRIPTDIR/data/incoming/
+
+    $AWS s3 cp ${incomingbucket}/${month}.data ${inputfile} 2>&1 | egrep -v "SNIMissingWarning"
+fi
 
 if [[ ! -e "$inputfile" ]] ; then
   echo "Input file $inputfile doesn't exist yet...  exiting"
@@ -47,13 +72,7 @@ fi
 
 cd $SCRIPTDIR
 echo "Processing sirsi data from file $inputfile"
-java -cp "$JAVACLASSPATH"  org.solrmarc.mixin.ReadUserResearchData -d bin/solrmarc3 -IRA $inputfile $outputfile
-
-#define the needed AWS environment variables
-if [[ "$AWS" == "" ]] ; then
-    echo "Environment variable $""AWS must be defined as executable for aws command-line interface"
-    exit 1
-fi
+$JAVA -cp "$JAVACLASSPATH"  org.solrmarc.mixin.ReadUserResearchData -d bin/solrmarc3 -IRA $inputfile $outputfile
 
 echo "Uploading $outputfile to AWS S3 bucket"
 if [[ "$testmode" == "-t" ]] ; then

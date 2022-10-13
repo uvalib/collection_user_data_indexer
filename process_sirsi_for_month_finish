@@ -22,7 +22,6 @@ log4j_dir="$solrmarc_dir/lib"
 log4j_jar_name=`ls -t $log4j_dir  | egrep "^log4j" | egrep "[.]jar$" | head -1`
 log4j_jar="$log4j_dir/$log4j_jar_name"
 
-PATH=/lib_content23/java_1.8.0/jdk1.8.0/bin:/usr/bin:/bin
 JAVACLASSPATH="$SCRIPTDIR/build/cnhi_build.jar:$solrmarc_jar:$log4j_jar"
 echo $JAVACLASSPATH
 
@@ -41,6 +40,12 @@ fi
 
 if [[ "$AWS" == "" ]] ; then
     echo "Environment variable $""AWS must be defined as executable for aws command-line interface"
+    exit 1
+fi
+
+#check for the needed JAVA environment variables
+if [[ "$JAVA" == "" ]] ; then
+    echo "Environment variable $""JAVA must be defined as executable for java version 1.8 or greater"
     exit 1
 fi
 
@@ -68,7 +73,7 @@ echo $AWS s3 cp "$input_bucket/$fileinbucket" $DATADIR/$localfilename
 $AWS s3 cp "$input_bucket/$fileinbucket" $DATADIR/$localfilename 2> /dev/null
 
 cd $SCRIPTDIR
-java -cp "$JAVACLASSPATH" org.solrmarc.mixin.ReadUserResearchData -d bin/solrmarc3 -irafile $DATADIR/$localfilename  $inputfile $outputfile 2>&1
+$JAVA -cp "$JAVACLASSPATH" org.solrmarc.mixin.ReadUserResearchData -d bin/solrmarc3 -irafile $DATADIR/$localfilename  $inputfile $outputfile 2>&1
 
 echo "Uploading file $outputfile to AWS bucket ${output_bucket} as ${outputname}"
 if [[ "$testmode" == "-t" ]] ; then
