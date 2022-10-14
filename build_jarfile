@@ -1,0 +1,6 @@
+#!/bin/bash
+
+SCRIPTDIR=$( (cd -P $(dirname $0) && pwd) )
+
+ant -f $SCRIPTDIR/build/build.xml jar
+
