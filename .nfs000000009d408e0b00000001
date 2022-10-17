@@ -30,8 +30,7 @@ lastday=`date -d "${month}-01 + 1 month - 1 day"  "+%Y-%m-%d"`
 
 
 #Check for months data from sirsi
-inputdir="$SCRIPTDIR/data/incoming/tracksys"
-inputfile="$inputdir/tracksys_${month}.tsv"
+inputfile="$SCRIPTDIR/data/incoming/tracksys/tracksys_${month}.tsv"
 outputdir="$SCRIPTDIR/data/to_IRA/tracksys"
 outputname="tracksys_${month}_IRA.tsv"
 outputfile="$outputdir/$outputname"
@@ -49,7 +48,6 @@ if [[ "$JAVA" == "" ]] ; then
     exit 1
 fi
 
-mkdir -p $inputdir
 mkdir -p $outputdir
 mkdir -p data/userid
 touch $SCRIPTDIR/data/records_index.txt
