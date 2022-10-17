@@ -59,10 +59,18 @@ else
     #Get months data from tracksys
     curl "https://tracksys-api-ws.internal.lib.virginia.edu/api/circulation?from=$firstday&to=$lastday" | 
         $SCRIPTDIR/tracksys_json2tsv > $inputfile
+    result=$?
+    if [[ "$result" != "0" ]] ; then
+        exit $result
+    fi
 fi
 
 #lookup userids for @virginia.edu users
-ils_url=`/lib_content23/solr73_virgo4/terraform-infrastructure/scripts/resolve-private.ksh ils-connector-ws.private.production 2> /dev/null | sed -e 's/^[^:]*: //'`
+ils_url=`$SCRIPTDIR/bin/resolve-private.ksh ils-connector-ws.private.production 2> /dev/null | sed -e 's/^[^:]*: //'`
+if [[ ! "$ils_url" =~ ^[0-9]*[.][0-9]*[.][0-9]*[.][0-9]*$ ]]; then 
+    echo "Error:  ILS-connector URL lookup failed: $ils_url" 
+    exit 1
+fi
 
 if [[ "$testmode" != "-t" ]] ; then
     if [[ -e "$outputfile" ]] ; then
@@ -123,6 +131,12 @@ cat $SCRIPTDIR/data/callnum2catkey_${month}.txt | sort - $SCRIPTDIR/data/callnum
 cd $SCRIPTDIR
 
 $JAVA -cp $JAVACLASSPATH org.solrmarc.mixin.ReadUserResearchData -d data/solrmarc3 -IRA  -s tracksys-uva "$inputfile" "$outputfile"
+
+result=$?
+if [[ "$result" != "0" ]] ; then
+    echo "Non-zero return code from ReadUserReserchData java program"
+    exit $result
+fi
 
 echo "Uploading $outputfile to AWS S3 bucket"
 if [[ "$testmode" == "-t" ]] ; then

@@ -1,8 +1,8 @@
-#!/bin/bash
-
+#!/bin/bash 
 SCRIPTDIR=$( (cd -P $(dirname $0) && pwd) )
 
-solrmarc_bin="/lib_content23/record_source_for_solr_cores/bin"
+solrmarc_dir=$SCRIPTDIR/bin/solrmarc3
+solrmarc_bin_dir="$SCRIPTDIR/bin"
 
 title=$1
 call_num=$2

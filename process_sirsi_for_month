@@ -57,8 +57,8 @@ if [[ ! -e "$inputfile" ]] ; then
 fi
 
 if [[ ! -e "$inputfile" ]] ; then
-  echo "Input file $inputfile doesn't exist yet...  exiting"
-  exit 1
+    echo "Input file $inputfile doesn't exist yet...  exiting"
+    exit 1
 fi
 
 mkdir -p $outputdir
@@ -73,6 +73,12 @@ fi
 cd $SCRIPTDIR
 echo "Processing sirsi data from file $inputfile"
 $JAVA -cp "$JAVACLASSPATH"  org.solrmarc.mixin.ReadUserResearchData -d bin/solrmarc3 -IRA $inputfile $outputfile
+
+result=$?
+if [[ "$result" != "0" ]] ; then
+    echo "Non-zero return code from ReadUserReserchData java program"
+    exit $result
+fi
 
 echo "Uploading $outputfile to AWS S3 bucket"
 if [[ "$testmode" == "-t" ]] ; then
