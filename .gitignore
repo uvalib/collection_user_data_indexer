@@ -1,3 +1,4 @@
 data
 build/cnhi_build.jar
 build/bin
+bin/solrmarc3/index_java/bin

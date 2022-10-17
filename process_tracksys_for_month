@@ -59,6 +59,7 @@ if [[ -e "$inputfile" ]] ; then
     echo "Input file $inputfile already exists ... skipping forward"
 else
     #Get months data from tracksys
+    echo curl "https://tracksys-api-ws.internal.lib.virginia.edu/api/circulation?from=$firstday&to=$lastday"
     curl "https://tracksys-api-ws.internal.lib.virginia.edu/api/circulation?from=$firstday&to=$lastday" | 
         $SCRIPTDIR/tracksys_json2tsv > $inputfile
     result=$?
@@ -132,7 +133,7 @@ cat $SCRIPTDIR/data/callnum2catkey_${month}.txt | sort - $SCRIPTDIR/data/callnum
 
 cd $SCRIPTDIR
 
-$JAVA -cp $JAVACLASSPATH org.solrmarc.mixin.ReadUserResearchData -d data/solrmarc3 -IRA  -s tracksys-uva "$inputfile" "$outputfile"
+$JAVA -cp $JAVACLASSPATH org.solrmarc.mixin.ReadUserResearchData -d bin/solrmarc3 -IRA  -s tracksys-uva "$inputfile" "$outputfile"
 
 result=$?
 if [[ "$result" != "0" ]] ; then
