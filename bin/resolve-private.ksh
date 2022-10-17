@@ -35,7 +35,7 @@ shift
 #fi
 
 # ensure we have the jq tool available
-JQ_TOOL=$SCRIPT_DIR/jq
+JQ_TOOL=jq
 ensure_tool_available $JQ_TOOL
 
 # ensure we have the aws command line tool available
