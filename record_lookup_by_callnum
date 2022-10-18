@@ -4,6 +4,12 @@ SCRIPTDIR=$( (cd -P $(dirname $0) && pwd) )
 solrmarc_dir=$SCRIPTDIR/bin/solrmarc3
 solrmarc_bin_dir="$SCRIPTDIR/bin"
 
+# http://virgo4-solr-staging-replica-0-private.internal.lib.virginia.edu:8080
+# http://v4-solr-production-replica-0-private.internal.lib.virginia.edu:8080
+if [[ "$SOLR_REPLICA_URL" == "" ]] ; then
+    SOLR_REPLICA_URL=http://virgo4-solr-staging-replica-0-private.internal.lib.virginia.edu:8080
+fi
+
 title=$1
 call_num=$2
 call_num_file=`echo $call_num | tr '/ ' '-_'`
@@ -12,11 +18,11 @@ file_list=$3
 
 #echo 'http://virgo4-solr-staging-replica-0-private.internal.lib.virginia.edu:8080/solr/test_core/select?defType=lucene&q=all_fields_t:%22'"$call_num_fixed"'%22&qt=search&fq=data_source_f:sirsi&fl=id&wt=xml'
  
-idlist2=`curl -s 'http://virgo4-solr-staging-replica-0-private.internal.lib.virginia.edu:8080/solr/test_core/select?defType=lucene&q=all_fields_t:%22'"$call_num_fixed"'%22&qt=search&fq=data_source_f:sirsi&fl=id&wt=xml' | egrep '"id"' | sed -e 's/.*id">//' -e 's/<.*$//' | tr '\n' ',' | sed -e 's/,$//'`
+idlist2=`curl -s "${SOLR_REPLICA_URL}/solr/test_core/select?defType=lucene&q=all_fields_t:%22${call_num_fixed}%22&qt=search&fq=data_source_f:sirsi&fl=id&wt=xml" | egrep '"id"' | sed -e 's/.*id">//' -e 's/<.*$//' | tr '\n' ',' | sed -e 's/,$//'`
 
 #echo 'http://virgo4-solr-staging-replica-0-private.internal.lib.virginia.edu:8080/solr/test_core/select?defType=lucene&q=individual_call_number_a:%22'"$call_num_fixed"'%22&qt=search&fq=data_source_f:sirsi&fl=id&wt=xml'
 
-idlist3=`curl -s 'http://virgo4-solr-staging-replica-0-private.internal.lib.virginia.edu:8080/solr/test_core/select?defType=lucene&q=call_number_all_e:%22'"$call_num_fixed"'%22&qt=search&fq=data_source_f:sirsi&fl=id&wt=xml' | egrep '"id"' | sed -e 's/.*id">//' -e 's/<.*$//' | tr '\n' ','`
+idlist3=`curl -s "${SOLR_REPLICA_URL}/solr/test_core/select?defType=lucene&q=call_number_all_e:%22${call_num_fixed}%22&qt=search&fq=data_source_f:sirsi&fl=id&wt=xml" | egrep '"id"' | sed -e 's/.*id">//' -e 's/<.*$//' | tr '\n' ','`
 
 idlist=`echo ${idlist2}${idlist3}`
 mkdir -p $SCRIPTDIR/data/callnum_by_both

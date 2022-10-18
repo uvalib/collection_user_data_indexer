@@ -1785,6 +1785,9 @@ public class JSONCustomLocationMixin extends SolrIndexerMixin
         }
         if (JSONLookupURL == null)
         {
+            logger.warn("JSON Lookup URL not defined defaulting to ils-connector-ws-dev " );
+            logger.warn("  either define the JAVA property  solrmarc.sirsi.location.url" );
+            logger.warn("  or the Environment variable  SOLRMARC_SIRSI_LOCATION_URL" );
             JSONLookupURL = "https://ils-connector-ws-dev.internal.lib.virginia.edu/v4/availability/list";
         }
 
