@@ -26,9 +26,8 @@ idlist3=`curl -s "${SOLR_REPLICA_URL}/solr/test_core/select?defType=lucene&q=cal
 
 idlist=`echo ${idlist2}${idlist3}`
 mkdir -p $SCRIPTDIR/data/callnum_by_both
-#echo $idlist
 
-curl -s 'https://ils.lib.virginia.edu/uhtbin/get_marc?keys='"$idlist" | ${solrmarc_bin_dir}/filterrecords '999a/'"$call_num" | tee "$SCRIPTDIR/data/callnum_by_both/CN_$call_num_file".mrc | ${solrmarc_bin_dir}/printrecord | egrep '^001' | sed -e 's/001[ ]*//'
+curl -s 'https://ils.lib.virginia.edu/uhtbin/get_marc?keys='"$idlist" | ${solrmarc_bin_dir}/filterrecords '999a/'"$call_num" | tee "$SCRIPTDIR/data/callnum_by_both/CN_$call_num_file".mrc | ${solrmarc_bin_dir}/printrecord | egrep '^001' | sed -e 's/001[ ]*//' | wc -l
 
 echo "$call_num_file" "CN_$call_num_file".mrc >> $file_list
 

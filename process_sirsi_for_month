@@ -51,7 +51,7 @@ if [[ ! -e "$inputfile" ]] ; then
       exit 1
     fi
 
-    mkdir -p $SCRIPTDIR/data/incoming/
+    mkdir -p $SCRIPTDIR/data/incoming/sirsi
 
     $AWS s3 cp ${incomingbucket}/${month}.data ${inputfile} 2>&1 | egrep -v "SNIMissingWarning"
 fi

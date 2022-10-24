@@ -82,9 +82,9 @@ if [[ "$testmode" != "-t" ]] ; then
     fi
 fi
 
+let cnt=0
 for userid in `cat $inputfile | egrep "@virginia.edu" | cut -f 3 | uniq | sort | uniq | sed -e 's/@virginia.edu//'`
     do 
-        echo $userid
         #echo curl "http://${ils_url}:8080/v4/users/$userid" ">" $SCRIPTDIR/data/userid/${userid}.data
         curl -s "http://${ils_url}:8080/v4/users/$userid" > $SCRIPTDIR/data/userid/${userid}.data
         ret=$?
@@ -92,37 +92,56 @@ for userid in `cat $inputfile | egrep "@virginia.edu" | cut -f 3 | uniq | sort |
             echo "Cannot resolve URL :  ${ils_url}"
             exit 1
         fi
+        let cnt+=1
     done
 
+echo "looked up $cnt userids in ILS-connector"
+
+declare -A RECCNTS
+let cnt=0
+cat $SCRIPTDIR/data/incoming/tracksys/tracksys_${month}.tsv  | cut -f 6 | sort | uniq > $SCRIPTDIR/data/incoming/tracksys/tracksys_${month}_callnums.txt
+rm -f $SCRIPTDIR/data/record_list_${month}.txt
+
 #Find sirsi records corresponding to the provided call numbers
-cat $SCRIPTDIR/data/incoming/tracksys/tracksys_${month}.tsv  | cut -f 6 | sort | uniq | 
     while read callnum  
     do 
         if [[ "$callnum" != "" ]] ; then  
-            $SCRIPTDIR/record_lookup_by_callnum "title" "$callnum" $SCRIPTDIR/data/record_list_${month}.txt
+            ret=`$SCRIPTDIR/record_lookup_by_callnum "title" "$callnum" $SCRIPTDIR/data/record_list_${month}.txt`
+            #echo "$ret"  
+            if [[ "${RECCNTS[$ret]}" == "" ]] ; then let RECCNTS[$ret]=1; else  let RECCNTS[$ret]+=1; fi
+            let cnt+=1
+            #echo $cnt $ret $callnum
         fi
-        echo $callnum
-    done
+    done < $SCRIPTDIR/data/incoming/tracksys/tracksys_${month}_callnums.txt
+
+echo     "Total callnums looked up :  $cnt"
+for i in ${!RECCNTS[@]}
+do 
+    echo "  matched with $i records:  ${RECCNTS[$i]}"
+done
 
 rm -f $SCRIPTDIR/data/callnum2catkey_${month}.txt
 rm -f $SCRIPTDIR/data/records_index_${month}.txt
 
-cat $SCRIPTDIR/data/record_list_${month}.txt | sort | uniq | 
-    while read callnum filename
-    do 
-        idswritten=`cat "$SCRIPTDIR/data/callnum_by_both/$filename" | $solrmarc_bin_dir/getrecord -id | tr '\n' ':'`
-        echo "$callnum=$idswritten" >>  $SCRIPTDIR/data/callnum2catkey_${month}.txt
-        ( cat $SCRIPTDIR/data/callnum_by_both/$filename |   $JAVA -jar $solrmarc_jar IndexDriver -config user_data.properties | egrep -v '^(DEBUG| INFO)' | sort >> $SCRIPTDIR/data/records_index_${month}.txt ) 2>&1
-        echo $callnum
-    done
+echo " Indexing $cnt MARC records"
+cat $SCRIPTDIR/data/record_list_${month}.txt | sort | uniq > $SCRIPTDIR/data/record_list_${month}_sort.txt 
 
-catkeys=`cat $SCRIPTDIR/data/record_list_${month}.txt| sort | uniq | 
+while read callnum filename
+do 
+    idswritten=`cat "$SCRIPTDIR/data/callnum_by_both/$filename" | $solrmarc_bin_dir/getrecord -id | tr '\n' ':'`
+    echo "$callnum=$idswritten" >>  $SCRIPTDIR/data/callnum2catkey_${month}.txt
+    ( cat $SCRIPTDIR/data/callnum_by_both/$filename |   $JAVA -jar $solrmarc_jar IndexDriver -config user_data.properties | egrep -v '^(DEBUG| INFO|WARN)' | sort >> $SCRIPTDIR/data/records_index_${month}.txt ) 2>&1
+#        echo $callnum
+done < $SCRIPTDIR/data/record_list_${month}_sort.txt
+
+catkeys=`cat $SCRIPTDIR/data/record_list_${month}_sort.txt |
     while read callnum filename
     do 
         cat "$SCRIPTDIR/data/callnum_by_both/$filename" | $solrmarc_bin_dir/getrecord -id
     done | 
         tr '\n' '|' | sed -e 's/\|$//'`
 
+#echo ${catkeys}
 egrep -v "^($catkeys) :" $SCRIPTDIR/data/records_index.txt | sort - $SCRIPTDIR/data/records_index_${month}.txt > $SCRIPTDIR/data/records_index.txt.sort
 if [[ -s  $SCRIPTDIR/data/records_index.txt.sort ]] ; then
     mv $SCRIPTDIR/data/records_index.txt $SCRIPTDIR/data/records_index.txt.bak
@@ -133,6 +152,7 @@ cat $SCRIPTDIR/data/callnum2catkey_${month}.txt | sort - $SCRIPTDIR/data/callnum
 
 cd $SCRIPTDIR
 
+echo "Running ReadUserResearchData java program to generate the output file to send to IRA"
 $JAVA -cp $JAVACLASSPATH org.solrmarc.mixin.ReadUserResearchData -d bin/solrmarc3 -IRA  -s tracksys-uva "$inputfile" "$outputfile"
 
 result=$?

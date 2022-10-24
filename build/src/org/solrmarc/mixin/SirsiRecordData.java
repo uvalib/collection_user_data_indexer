@@ -172,6 +172,10 @@ public class SirsiRecordData {
 				{
 					if (line.startsWith(" INFO ")) continue;
 					String[]  keyValue = line.split(" : ", 2);
+                                        if (keyValue.length != 2) 
+                                        {
+                                            continue;
+                                        }
 					if (keyValue[0].equals(prevCatKey))
 					{
 						recordData.add(keyValue[1]);
