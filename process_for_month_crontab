@@ -13,10 +13,30 @@ outputfile=$SCRIPTDIR/data/crontab-${month}.out
 echo "Starting processing for month ${month}. Date and time is: "`date` > ${outputfile}
 
 $SCRIPTDIR/build_jarfile >>  ${outputfile}
+res=$?
+if [ ${res} -ne 0 ]; then
+   echo "Error ${res} building jarfile, terminating"
+   exit ${res}
+fi
 
 echo "Process sirsi records" >> ${outputfile}
 $SCRIPTDIR/process_sirsi_for_month ${testmode} 2>&1 >> ${outputfile}
+res=$?
+if [ ${res} -ne 0 ]; then
+   echo "Error ${res} processing sirsi records, terminating"
+   exit ${res}
+fi
 
 echo "Process tracksys records" >> ${outputfile}
 $SCRIPTDIR/process_tracksys_for_month ${testmode} 2>&1 >> ${outputfile}
+res=$?
+if [ ${res} -ne 0 ]; then
+   echo "Error ${res} processing tracksys records, terminating"
+   exit ${res}
+fi
 
+exit 0
+
+#
+# end of file
+#
