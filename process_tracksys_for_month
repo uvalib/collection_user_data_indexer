@@ -60,8 +60,7 @@ if [[ -e "$inputfile" ]] ; then
 else
     #Get months data from tracksys
     echo curl "https://tracksys-api-ws.internal.lib.virginia.edu/api/circulation?from=$firstday&to=$lastday"
-    curl "https://tracksys-api-ws.internal.lib.virginia.edu/api/circulation?from=$firstday&to=$lastday" | 
-        $SCRIPTDIR/tracksys_json2tsv > $inputfile
+    curl -s "https://tracksys-api-ws.internal.lib.virginia.edu/api/circulation?from=$firstday&to=$lastday" | $SCRIPTDIR/tracksys_json2tsv > $inputfile
     result=$?
     if [[ "$result" != "0" ]] ; then
         exit $result

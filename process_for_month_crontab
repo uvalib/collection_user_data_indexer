@@ -8,11 +8,13 @@ if [[ "${month}" = "" ]]; then
     month=`date -d "-1 month" "+%Y%m"`
 fi
 
-outputfile=$SCRIPTDIR/data/crontab-${month}.out
+DATADIR=$SCRIPTDIR/data
+mkdir -p $DATADIR
+outputfile=$DATADIR/crontab-${month}.out
 
 echo "Starting processing for month ${month}. Date and time is: "`date` > ${outputfile}
 
-$SCRIPTDIR/build_jarfile >>  ${outputfile}
+$SCRIPTDIR/build_jarfile >>  ${outputfile} 2>&1
 res=$?
 if [ ${res} -ne 0 ]; then
    echo "Error ${res} building jarfile, terminating"
@@ -20,7 +22,7 @@ if [ ${res} -ne 0 ]; then
 fi
 
 echo "Process sirsi records" >> ${outputfile}
-$SCRIPTDIR/process_sirsi_for_month ${testmode} 2>&1 >> ${outputfile}
+$SCRIPTDIR/process_sirsi_for_month ${testmode} >> ${outputfile} 2>&1
 res=$?
 if [ ${res} -ne 0 ]; then
    echo "Error ${res} processing sirsi records, terminating"
@@ -28,7 +30,7 @@ if [ ${res} -ne 0 ]; then
 fi
 
 echo "Process tracksys records" >> ${outputfile}
-$SCRIPTDIR/process_tracksys_for_month ${testmode} 2>&1 >> ${outputfile}
+$SCRIPTDIR/process_tracksys_for_month ${testmode} >> ${outputfile} 2>&1
 res=$?
 if [ ${res} -ne 0 ]; then
    echo "Error ${res} processing tracksys records, terminating"
