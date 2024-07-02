@@ -129,7 +129,7 @@ while read callnum filename
 do 
     idswritten=`cat "$SCRIPTDIR/data/callnum_by_both/$filename" | $solrmarc_bin_dir/getrecord -id | tr '\n' ':'`
     echo "$callnum=$idswritten" >>  $SCRIPTDIR/data/callnum2catkey_${month}.txt
-    ( cat $SCRIPTDIR/data/callnum_by_both/$filename |   $JAVA -jar $solrmarc_jar IndexDriver -config user_data.properties | egrep -v '^(DEBUG| INFO|WARN)' | sort >> $SCRIPTDIR/data/records_index_${month}.txt ) 2>&1
+    ( cat $SCRIPTDIR/data/callnum_by_both/$filename |   $JAVA -jar $solrmarc_jar IndexDriver -config user_data.properties | sort >> $SCRIPTDIR/data/records_index_${month}.txt ) 2>&1
 #        echo $callnum
 done < $SCRIPTDIR/data/record_list_${month}_sort.txt
 
@@ -141,7 +141,7 @@ catkeys=`cat $SCRIPTDIR/data/record_list_${month}_sort.txt |
         tr '\n' '|' | sed -e 's/\|$//'`
 
 #echo ${catkeys}
-egrep -v "^($catkeys) :" $SCRIPTDIR/data/records_index.txt | sort - $SCRIPTDIR/data/records_index_${month}.txt > $SCRIPTDIR/data/records_index.txt.sort
+egrep -v "^($catkeys) :" $SCRIPTDIR/data/records_index.txt | sort - $SCRIPTDIR/data/records_index_${month}.txt | egrep -v '^(DEBUG| INFO| WARN|ERROR|FATAL)' > $SCRIPTDIR/data/records_index.txt.sort
 if [[ -s  $SCRIPTDIR/data/records_index.txt.sort ]] ; then
     mv $SCRIPTDIR/data/records_index.txt $SCRIPTDIR/data/records_index.txt.bak
     mv $SCRIPTDIR/data/records_index.txt.sort $SCRIPTDIR/data/records_index.txt
