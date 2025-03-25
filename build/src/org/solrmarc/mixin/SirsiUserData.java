@@ -71,9 +71,18 @@ public class SirsiUserData {
 		String[]  userDataParts = userData.replaceAll("[{}]",  "").split("\"?,\"");
 		for (String part : userDataParts)
 		{
+			//System.out.println("part = "+ part);
 			String[] keyValue = part.split(":");
 			String key = keyValue[0].replaceAll("\"", "").trim();
-			Object value = keyValue[1].replaceAll("\"", "").trim();
+                        Object value = null;
+			if (keyValue.length >= 2) 
+			{
+				value = keyValue[1].replaceAll("\"", "").trim();
+			}
+			else
+			{
+				//System.err.println("bad value = "+keyValue[0]);
+			}
 			Field field;
 			try { 
 				if (key.equals("id")) key = "computingId";
